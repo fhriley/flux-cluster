@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: sonarr
+  name: sabnzbd
   namespace: default
 spec:
   interval: 30m
@@ -31,15 +31,20 @@ spec:
       annotations:
         reloader.stakater.com/auto: "true"
     image:
-      repository: ghcr.io/onedr0p/sonarr-develop
-      tag: 4.0.0.582@sha256:40fda381027aaabda917a25b1dd62e9c73ffd53caf3ec2e2244b11d5da95f17f
+      repository: ghcr.io/onedr0p/sabnzbd
+      tag: 4.0.3@sha256:aff676e3c234f7a4493c75813e296c347c02b6e5374acd1858f8244ea44f2b4a
     env:
       TZ: America/Phoenix
-      PUSHOVER_DEBUG: "false"
-      SONARR__INSTANCE_NAME: Sonarr
-      SONARR__PORT: &port 80
-      SONARR__LOG_LEVEL: info
-      SONARR__API_KEY: "${SECRET_SONARR__API_KEY}"
+      SABNZBD__PORT: &port 80
+      SABNZBD__HOST_WHITELIST_ENTRIES: >-
+        sabnzbd,
+        sabnzbd.default,
+        sabnzbd.default.svc,
+        sabnzbd.default.svc.cluster,
+        sabnzbd.default.svc.cluster.local,
+        sabnzbd-test.${SECRET_DOMAIN}
+      SABNZBD__API_KEY: "${SECRET_SABNZBD__API_KEY}"
+      SABNZBD__NZB_KEY: "${SECRET_SABNZBD__NZB_KEY}"
     service:
       main:
         ports:
@@ -51,7 +56,7 @@ spec:
         custom: true
         spec:
           httpGet:
-            path: /ping
+            path: /api?mode=version
             port: *port
           initialDelaySeconds: 0
           periodSeconds: 10
@@ -65,9 +70,9 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/icon: mdi:television-box
+          hajimari.io/icon: mdi:download-box
         hosts:
-          - host: &host "sonarr-test.${SECRET_DOMAIN}"
+          - host: &host "sabnzbd-test.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -84,16 +89,23 @@ spec:
       config:
         enabled: true
         type: hostPath
-        hostPath: /zfs/docker/appdata/sonarr
+        hostPath: /zfs/docker/appdata/sabnzbd
         mountPath: /config
       media:
         enabled: true
         type: hostPath
         hostPath: /zfs/media
         mountPath: /data
+      incomplete:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/ssd/sabnzbd/incomplete
+        mountPath: /ssd/incomplete
+    # nodeSelector:
+    #   node-role.kubernetes.io/worker: "true"
     # resources:
     #   requests:
     #     cpu: 10m
     #     memory: 250Mi
     #   limits:
-    #     memory: 2000Mi
+    #     memory: 8000Mi
