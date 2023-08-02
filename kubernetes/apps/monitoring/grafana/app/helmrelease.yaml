@@ -166,7 +166,7 @@ spec:
       annotations:
         hajimari.io/icon: simple-icons:grafana
       hosts:
-        - &host "grafana.${SECRET_DOMAIN}"
+        - &host "grafana-test.${SECRET_DOMAIN}"
       tls:
         - hosts:
             - *host
