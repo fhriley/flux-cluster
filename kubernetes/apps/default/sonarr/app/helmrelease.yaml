@@ -67,7 +67,7 @@ spec:
         annotations:
           hajimari.io/icon: mdi:television-box
         hosts:
-          - host: &host "sonarr-test.${SECRET_DOMAIN}"
+          - host: &host "sonarr.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix

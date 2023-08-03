@@ -42,7 +42,7 @@ spec:
         sabnzbd.default.svc,
         sabnzbd.default.svc.cluster,
         sabnzbd.default.svc.cluster.local,
-        sabnzbd-test.${SECRET_DOMAIN}
+        sabnzbd.${SECRET_DOMAIN}
       SABNZBD__API_KEY: "${SECRET_SABNZBD__API_KEY}"
       SABNZBD__NZB_KEY: "${SECRET_SABNZBD__NZB_KEY}"
     service:
@@ -72,7 +72,7 @@ spec:
         annotations:
           hajimari.io/icon: mdi:download-box
         hosts:
-          - host: &host "sabnzbd-test.${SECRET_DOMAIN}"
+          - host: &host "sabnzbd.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
